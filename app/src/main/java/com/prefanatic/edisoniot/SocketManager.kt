@@ -1,11 +1,8 @@
 package com.prefanatic.edisoniot
 
-import com.squareup.moshi.Moshi
 import okhttp3.*
 import okio.ByteString
 import rx.Observable
-import rx.subjects.BehaviorSubject
-import rx.subjects.PublishSubject
 import java.nio.ByteBuffer
 
 /**
@@ -13,38 +10,34 @@ import java.nio.ByteBuffer
  */
 object SocketManager {
     val client = OkHttpClient()
-    val stateSubject = BehaviorSubject.create<WebSocket>()
-    val messageSubject = PublishSubject.create<Message>()
 
-    val moshi = Moshi.Builder().build()
-    val messageAdapter = moshi.adapter(Message::class.java)
+    private val delegate = RxSocketDelegate<WebSocket>()
 
     val socketListener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket?, response: Response?) {
             print("Opened.")
 
-            stateSubject.onNext(webSocket)
+            delegate.onOpened(webSocket!!)
         }
 
         override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
             t?.printStackTrace()
             print("Failed.")
 
-            stateSubject.onError(t)
             socket = null
+            delegate.onError(t!!)
         }
 
         override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
             print("Closing.")
 
-            stateSubject.onCompleted()
             socket = null
         }
 
         override fun onMessage(webSocket: WebSocket?, text: String?) {
             print("Message: $text")
 
-            messageSubject.onNext(messageAdapter.fromJson(text))
+            delegate.onMessage(text!!)
         }
 
         override fun onMessage(webSocket: WebSocket?, bytes: ByteString?) {
@@ -55,6 +48,7 @@ object SocketManager {
             print("Closed.")
 
             socket = null
+            delegate.onClosed()
         }
     }
 
@@ -76,12 +70,16 @@ object SocketManager {
     }
 
     fun observeMessages(): Observable<Message> {
-        return messageSubject.asObservable()
+        return delegate.messageSubject.asObservable()
+    }
+
+    fun observeState(): Observable<WebSocket> {
+        return delegate.stateSubject.asObservable()
     }
 
     fun send(path: String, message: String, data: ByteBuffer? = null) {
         val message = Message(path, message, data?.array())
 
-        socket?.send(messageAdapter.toJson(message))
+        socket?.send(delegate.buildMessage(message))
     }
 }

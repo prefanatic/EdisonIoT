@@ -3,7 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/EdisonIoT.iml" filepath="$PROJECT_DIR$/EdisonIoT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EdisonIoT.iml" filepath="$PROJECT_DIR$/EdisonIoT.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/edison/edison.iml" filepath="$PROJECT_DIR$/edison/edison.iml" />
       <module fileurl="file://$PROJECT_DIR$/edison/edison.iml" filepath="$PROJECT_DIR$/edison/edison.iml" />
     </modules>
   </component>

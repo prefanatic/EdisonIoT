@@ -1,8 +1,8 @@
 package com.prefanatic.edisoniot
 
 import android.graphics.Color
-import android.service.quicksettings.Tile.STATE_ACTIVE
-import android.service.quicksettings.Tile.STATE_INACTIVE
+import android.service.quicksettings.Tile
+import android.service.quicksettings.Tile.*
 import android.service.quicksettings.TileService
 import android.support.annotation.ColorInt
 import okio.ByteString
@@ -14,20 +14,26 @@ import java.nio.ByteBuffer
 class LightTileService : TileService() {
     override fun onCreate() {
         super.onCreate()
-        SocketManager.messageSubject
+        SocketManager.observeMessages()
+                .filter { it.path == PATH_LED }
                 .subscribe {
                     when (it.message) {
                         "led-off" -> qsTile.state = STATE_INACTIVE
                         "led-on" -> qsTile.state = STATE_ACTIVE
                     }
                 }
+
+        SocketManager.observeState()
+                .doOnCompleted { qsTile.state = STATE_UNAVAILABLE }
+                .subscribe {
+                    qsTile.state = STATE_ACTIVE
+                }
     }
 
     override fun onClick() {
         super.onClick()
 
-        println("Hello World")
-        SocketManager.send("/led/", "toggle")
+        SocketManager.send(PATH_LED, ACTION_TOGGLE)
     }
 }
 

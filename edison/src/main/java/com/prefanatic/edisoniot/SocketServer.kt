@@ -19,23 +19,22 @@ import rx.subjects.PublishSubject
 
 class SocketServer(address: InetSocketAddress) : WebSocketServer(address) {
     private var mSocket: WebSocket? = null
-
-    val messageSubject = PublishSubject.create<Message>()
-    val moshi = Moshi.Builder().build()
-    val messageAdapter = moshi.adapter(Message::class.java)
+    private val delegate = RxSocketDelegate<WebSocket>()
 
     override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
         mSocket = conn
+
+        delegate.onOpened(conn)
     }
 
     override fun onClose(conn: WebSocket, code: Int, reason: String, remote: Boolean) {
-
+        delegate.onClosed()
     }
 
     override fun onMessage(conn: WebSocket, message: String) {
         Log.d(TAG, "onMessage(String): " + message)
 
-        messageSubject.onNext(messageAdapter.fromJson(message))
+        delegate.onMessage(message)
     }
 
     override fun onMessage(conn: WebSocket?, message: ByteBuffer?) {
@@ -45,11 +44,11 @@ class SocketServer(address: InetSocketAddress) : WebSocketServer(address) {
     }
 
     override fun onError(conn: WebSocket, ex: Exception) {
-        messageSubject.onError(ex)
+        delegate.onError(ex)
     }
 
     fun asObservable(): Observable<Message> {
-        return messageSubject.asObservable()
+        return delegate.messageSubject.asObservable()
     }
 
     companion object {

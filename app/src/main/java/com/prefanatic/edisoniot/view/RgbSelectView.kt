@@ -1,4 +1,4 @@
-package com.prefanatic.edisoniot
+package com.prefanatic.edisoniot.view
 
 import android.content.Context
 import android.graphics.Color
@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import com.prefanatic.edisoniot.R
+import com.prefanatic.edisoniot.convertDpToPixel
 
 
 /**

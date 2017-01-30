@@ -4,15 +4,23 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <com.prefanatic.edisoniot.RgbSelectView
+    <com.prefanatic.edisoniot.view.ColorListView
+        android:id="@+id/color_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <com.prefanatic.edisoniot.view.RgbSelectView
         android:id="@+id/rgb_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/send_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send"/>
+        android:text="Send"
+        android:visibility="gone"/>
 
 </LinearLayout>
