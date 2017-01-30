@@ -16,18 +16,20 @@ class LightTileService : TileService() {
         super.onCreate()
         SocketManager.observeMessages()
                 .filter { it.path == PATH_LED }
-                .subscribe {
+                .subscribe({
                     when (it.message) {
                         "led-off" -> qsTile.state = STATE_INACTIVE
                         "led-on" -> qsTile.state = STATE_ACTIVE
                     }
-                }
+                }, {
+                    print("Error $it")
+                })
 
-        SocketManager.observeState()
-                .doOnCompleted { qsTile.state = STATE_UNAVAILABLE }
-                .subscribe {
-                    qsTile.state = STATE_ACTIVE
-                }
+//        SocketManager.observeState()
+//                .doOnCompleted { qsTile.state = STATE_UNAVAILABLE }
+//                .subscribe {
+//                    qsTile.state = STATE_ACTIVE
+//                }
     }
 
     override fun onClick() {

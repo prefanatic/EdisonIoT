@@ -7,12 +7,13 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.annotation.ColorInt
+import android.support.v4.graphics.ColorUtils
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.ViewUtils
-import android.util.Log
+import android.transition.TransitionManager
+import android.view.View
 import kotlinx.android.synthetic.main.activity_color_control.*
+import org.jetbrains.anko.doAsync
 import java.nio.ByteBuffer
-import java.util.*
 
 
 /**
@@ -40,10 +41,23 @@ class MainActivity : AppCompatActivity() {
         color_list.addColor(Color.GREEN)
         color_list.addColor(Color.BLUE)
 
-        val random = Random()
-        for (i in 0..128) {
-            color_list.addColor(Color.rgb(random.nextInt(255), random.nextInt(255),
-                    random.nextInt(255)))
+        //for (lightness in 1..100) {
+            for (hue in 0..360) {
+                //for (saturation in 1..100) {
+                    color_list.addColor(ColorUtils.HSLToColor(floatArrayOf(hue.toFloat(), 50 / 100f, 50 / 100f)))
+                //}
+            }
+        //}
+
+        fab.setOnClickListener {
+            TransitionManager.beginDelayedTransition(coordinator)
+            rgb_view.visibility = View.VISIBLE
+        }
+        rgb_view.setOnClickListener {
+            TransitionManager.beginDelayedTransition(coordinator)
+
+            color_list.addColor(rgb_view.color)
+            rgb_view.visibility = View.GONE
         }
 
         color_list.clickSubject.subscribe {
@@ -58,6 +72,16 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         SocketManager.createSocket()
+    }
+
+    override fun onBackPressed() {
+        if (rgb_view.visibility == View.VISIBLE) {
+            TransitionManager.beginDelayedTransition(coordinator)
+            rgb_view.visibility = View.GONE
+            return
+        }
+
+        super.onBackPressed()
     }
 
     fun sendColor(@ColorInt color: Int) {
