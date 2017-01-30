@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">EdisonIoT</string>
+    <string name="light_tile_label">Lights</string>
+    <string name="color_red">Red</string>
+    <string name="color_green">Green</string>
+    <string name="color_blue">Blue</string>
 </resources>

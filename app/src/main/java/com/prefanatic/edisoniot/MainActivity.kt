@@ -1,11 +1,13 @@
 package com.prefanatic.edisoniot
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import okhttp3.*
+import com.prefanatic.edisoniot.SocketManager.socket
+import kotlinx.android.synthetic.main.activity_color_control.*
 import okio.ByteString
+import java.nio.ByteBuffer
 
 /**
  * Created by codygoldberg on 12/26/16.
@@ -13,43 +15,25 @@ import okio.ByteString
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var client: OkHttpClient
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_color_control)
 
-        client = OkHttpClient()
+        startService(Intent(this, ConnectionService::class.java))
 
-        val request = Request.Builder()
-                .url("ws://192.168.1.117:12345")
-                .build()
+        send_button.setOnClickListener {
+            val buffer = ByteBuffer.allocate(4)
+                    .putInt(rgb_view.color)
+                    .rewind() as ByteBuffer
 
-        client.newWebSocket(request, object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket?, response: Response?) {
-                print("Opened.")
-            }
+            SocketManager.send("/led/", "set.color", buffer)
+        }
+    }
 
-            override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
-                t?.printStackTrace()
-                print("Failed.")
-            }
+    override fun onStart() {
+        super.onStart()
 
-            override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
-                print("Closing.")
-            }
-
-            override fun onMessage(webSocket: WebSocket?, text: String?) {
-                print("Message: $text")
-            }
-
-            override fun onMessage(webSocket: WebSocket?, bytes: ByteString?) {
-                print("Message (b): $bytes")
-            }
-
-            override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
-                print("Closed.")
-            }
-        })
+        SocketManager.createSocket()
     }
 }
 

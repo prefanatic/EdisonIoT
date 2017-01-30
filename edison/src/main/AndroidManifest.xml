@@ -14,7 +14,7 @@
 
         <uses-library android:name="com.google.android.things"/>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".IotActivity">
             <!-- Launch activity as default from Android Studio -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
